@@ -1,0 +1,28 @@
+ Talon motor ports:
+    front left drive: 0
+    front left turn: 1
+    back left drive: 2
+    back left turn: 3
+    front right drive: 4
+    front right turn: 5
+    back right drive: 6
+    back right turn: 7
+
+    upper launcher motor: 8
+    lower launcher motor: 9
+
+    left belt motor: 10
+    right belt motor: 11
+
+    left launcher rotation motor: 12
+    right launcher rotation motor: 13
+
+    intake motor: 14
+
+Encoder Ports:
+    front left encoder: 0
+    back left encoder: 1
+    front right encoder: 2
+    back right encoder: 3
+
+    launcher encoder: 4

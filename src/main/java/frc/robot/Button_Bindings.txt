@@ -1,0 +1,22 @@
+---Driver
+Y button: Zeros gyro
+Left Bumper: robot Centric(forward is robots forward)
+B button: Speaker Tracking
+
+---Operator
+X Button: Launcher Down
+Y Button: Launcher Up
+A Button: Activate Feed
+B Button: Cancle Intake and Feed 
+
+Left Bumper: Intake Assembly 
+Left Trigger: Reverse Intake and Feed 
+Right Bumper: Launcher Tracking + Launcher Speed 
+Right Triger: Amp Launch Speed 
+
+Back Button: Backwards Angle For Speaker
+
+D-Pad Down: Launcher Down to ~Zero
+D-Pad Left: Safety Launch Angle 
+D-Pad Right: Speaker Up close Angle 
+D-Pad Up: Amp Launch Angle
