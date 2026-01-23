@@ -53,15 +53,17 @@ public class PhotonAligner extends Command {
     
 
         // Auto-align when requested
-        if (controller.getAButton() && targetVisible) {
+        if (targetVisible==true) {
             // Driver wants auto-alignment to tag 7
             // And, tag 7 is in sight, so we can turn toward it.
             // Override the driver's turn command with an automatic one that turns toward the tag.
             turn = -1.0 * targetYaw * kP * Constants.Swerve.maxAngularVelocity;
+            SmartDashboard.putNumber("Raw Target Yaw", targetYaw);
+            SmartDashboard.putNumber("Photon Turn Value", turn);
         }
         Translation2d translation= new Translation2d(forward,strafe);
         // Command drivetrain motors based on target speeds
-        s_Swerve.drive(translation, turn, true, true);
+        //s_Swerve.drive(translation, turn, false, true);
 
         // Put debug information to the dashboard
         SmartDashboard.putBoolean("Vision Target Visible", targetVisible);

@@ -51,7 +51,7 @@ public class RobotContainer {
 
     private final JoystickButton SpeakerTrack = new JoystickButton(driver, XboxController.Button.kB.value);
     private final JoystickButton NoteTrack = new JoystickButton(driver, XboxController.Button.kX.value);
-
+    private final JoystickButton visionButton = new JoystickButton(driver, XboxController.Button.kA.value);
     /* Operator Buttons */
     private final JoystickButton IntakeAssembly = new JoystickButton(operator, 5);
     private final JoystickButton reverseIntakeFeed = new JoystickButton(operator, 7);
@@ -80,6 +80,7 @@ public class RobotContainer {
     private final LauncherTrackingSubsystem lt_LaunchTrackSubsystem = new LauncherTrackingSubsystem();
     private final SwerveTrackingSubsystem st_SwerveTrackSubsystem = new SwerveTrackingSubsystem();
     private final ObjectTrackingSubsystem ob_ObjectTrackingSubsystem = new ObjectTrackingSubsystem();
+    private final PhotonVisionSubsystem pv_PhotonVisionSubsystem = new PhotonVisionSubsystem();
 
     /* double Suppliers */
     public static DoubleSupplier intakeSpeed = () -> Constants.IntakeConstants.kIntakeSpeed.get(0.0);
@@ -146,6 +147,7 @@ public class RobotContainer {
                                                               () -> -driver.getRawAxis(strafeAxis),
                                                               () -> robotCentric.getAsBoolean()
                                                               ));
+        visionButton.whileTrue(new InstantCommand(() -> pv_PhotonVisionSubsystem.processVision()));
         /* Operator Buttons */
         reverseIntakeFeed.onTrue(new InstantCommand(() -> i_Intake.setFeedAndIntakeSpeed(-Constants.IntakeConstants.kIntakeSpeed.get(0.0), -Constants.LauncherConstants.kFeedSpeed.get(0.0))))
                 .onFalse(new InstantCommand(() -> i_Intake.setFeedAndIntakeSpeed(0.0, 0.0)));
