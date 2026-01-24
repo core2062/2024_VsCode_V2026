@@ -147,7 +147,10 @@ public class RobotContainer {
                                                               () -> -driver.getRawAxis(strafeAxis),
                                                               () -> robotCentric.getAsBoolean()
                                                               ));
-        visionButton.whileTrue(new InstantCommand(() -> pv_PhotonVisionSubsystem.processVision()));
+        visionButton.whileTrue(new PhotonAligner(s_Swerve,
+                                                pv_PhotonVisionSubsystem.getCamera(),
+                                                driver
+                                                ));
         /* Operator Buttons */
         reverseIntakeFeed.onTrue(new InstantCommand(() -> i_Intake.setFeedAndIntakeSpeed(-Constants.IntakeConstants.kIntakeSpeed.get(0.0), -Constants.LauncherConstants.kFeedSpeed.get(0.0))))
                 .onFalse(new InstantCommand(() -> i_Intake.setFeedAndIntakeSpeed(0.0, 0.0)));

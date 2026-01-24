@@ -3,6 +3,7 @@ package frc.robot.commands;
 import org.photonvision.PhotonCamera;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -13,11 +14,15 @@ import edu.wpi.first.math.geometry.Translation2d;
 public class PhotonAligner extends Command {
     private Swerve s_Swerve;
     private PhotonCamera camera;
-    private XboxController controller;
+    private Joystick controller;
     
-    private final double kP=0.05;
+    private final double anglekP=0.4;
+    private final double driveKP=0.5;
+    private final double targetDistance=1;
+    private double projectedDistance=0;
+    private double projectedStraf=0;
 
-    public PhotonAligner(Swerve s_Swerve, PhotonCamera camera, XboxController controller) {
+    public PhotonAligner(Swerve s_Swerve, PhotonCamera camera, Joystick controller) {
         this.s_Swerve = s_Swerve;
         this.camera = camera;
         this.controller = controller;
@@ -27,9 +32,9 @@ public class PhotonAligner extends Command {
     }
     @Override
     public void execute(){
-        double forward = -controller.getLeftY() * Constants.Swerve.maxSpeed;
-        double strafe = -controller.getLeftX() * Constants.Swerve.maxSpeed;
-        double turn = -controller.getRightX() * Constants.Swerve.maxAngularVelocity;
+        double forward = -controller.getRawAxis(1) * Constants.Swerve.maxSpeed;
+        double strafe = -controller.getRawAxis(0) * Constants.Swerve.maxSpeed;
+        double turn = -controller.getRawAxis(4) * Constants.Swerve.maxAngularVelocity;
 
         // Read in relevant data from the Camera
         boolean targetVisible = false;
@@ -42,10 +47,13 @@ public class PhotonAligner extends Command {
             if (result.hasTargets()) {
                 // At least one AprilTag was seen by the camera
                 for (var target : result.getTargets()) {
-                    if (target.getFiducialId() == 1) {
+                    if (target.getFiducialId() == 21) {
                         // Found Tag 1, record its information
                         targetYaw = target.getYaw();
                         targetVisible = true;
+                        var translation = target.getBestCameraToTarget();
+                        projectedDistance=translation.getY();
+                        projectedStraf=translation.getX();
                     }
                 }
             }
@@ -54,19 +62,31 @@ public class PhotonAligner extends Command {
 
         // Auto-align when requested
         if (targetVisible==true) {
+            if(Math.abs(targetYaw)>5){
             // Driver wants auto-alignment to tag 7
             // And, tag 7 is in sight, so we can turn toward it.
             // Override the driver's turn command with an automatic one that turns toward the tag.
-            turn = -1.0 * targetYaw * kP * Constants.Swerve.maxAngularVelocity;
-            SmartDashboard.putNumber("Raw Target Yaw", targetYaw);
-            SmartDashboard.putNumber("Photon Turn Value", turn);
+            turn = targetYaw * anglekP * Constants.Swerve.maxAngularVelocity;
         }
-        Translation2d translation= new Translation2d(forward,strafe);
+        double distanceError=targetDistance-projectedDistance;
+        if(Math.abs(distanceError)>0.1){
+        forward=driveKP*Constants.Swerve.maxSpeed*distanceError;
+        }
+        if(Math.abs(projectedStraf)>0.1){
+        strafe=driveKP*Constants.Swerve.maxSpeed*projectedStraf;
+        }
+    }
+        Translation2d translation= new Translation2d(forward,0);
         // Command drivetrain motors based on target speeds
-        //s_Swerve.drive(translation, turn, false, true);
+    
+        s_Swerve.drive(translation, 0, false, true);
 
-        // Put debug information to the dashboard
+        // Put debug information to the dashboards
+        SmartDashboard.putNumber("Raw Target Yaw", targetYaw);
+        SmartDashboard.putNumber("Photon Turn Value", turn);
         SmartDashboard.putBoolean("Vision Target Visible", targetVisible);
-      
+        SmartDashboard.putNumber("Photon Forward", forward);
+        SmartDashboard.putNumber("Photon strafe", strafe);
+        SmartDashboard.putNumber("Photon turn", turn);
 }
 }

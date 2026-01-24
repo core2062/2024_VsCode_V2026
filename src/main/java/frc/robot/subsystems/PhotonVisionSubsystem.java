@@ -15,7 +15,9 @@ import org.photonvision.targeting.PhotonPipelineResult;
 public class PhotonVisionSubsystem extends SubsystemBase{
 
     private final PhotonCamera camera = new PhotonCamera("regArducam2062");
-
+    public PhotonCamera getCamera(){
+        return camera;
+    }
 
     public void processVision(){
 
