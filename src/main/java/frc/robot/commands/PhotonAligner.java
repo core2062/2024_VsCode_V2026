@@ -3,6 +3,7 @@ package frc.robot.commands;
 import org.photonvision.PhotonCamera;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -17,8 +18,8 @@ public class PhotonAligner extends Command {
     private Joystick controller;
     
     private final double anglekP=0.4;
-    private final double driveKP=0.5;
-    private final double targetDistance=1;
+    private final double driveKP=0.6;
+    private final double targetDistance=0.5;
     private double projectedDistance=0;
     private double projectedStraf=0;
 
@@ -47,13 +48,13 @@ public class PhotonAligner extends Command {
             if (result.hasTargets()) {
                 // At least one AprilTag was seen by the camera
                 for (var target : result.getTargets()) {
-                    if (target.getFiducialId() == 21) {
+                    if (target.getFiducialId() == 1) {
                         // Found Tag 1, record its information
                         targetYaw = target.getYaw();
                         targetVisible = true;
                         var translation = target.getBestCameraToTarget();
-                        projectedDistance=translation.getY();
-                        projectedStraf=translation.getX();
+                        projectedDistance=translation.getX();
+                        projectedStraf=translation.getY();
                     }
                 }
             }
@@ -69,17 +70,17 @@ public class PhotonAligner extends Command {
             turn = targetYaw * anglekP * Constants.Swerve.maxAngularVelocity;
         }
         double distanceError=targetDistance-projectedDistance;
-        if(Math.abs(distanceError)>0.1){
+        if(Math.abs(distanceError)>0.15){
         forward=driveKP*Constants.Swerve.maxSpeed*distanceError;
         }
-        if(Math.abs(projectedStraf)>0.1){
+        if(Math.abs(projectedStraf)>0.15){
         strafe=driveKP*Constants.Swerve.maxSpeed*projectedStraf;
         }
     }
-        Translation2d translation= new Translation2d(forward,0);
+        Translation2d translation= new Translation2d(-strafe,-forward);
         // Command drivetrain motors based on target speeds
     
-        s_Swerve.drive(translation, 0, false, true);
+        s_Swerve.drive(translation, turn, false, true);
 
         // Put debug information to the dashboards
         SmartDashboard.putNumber("Raw Target Yaw", targetYaw);
@@ -87,6 +88,6 @@ public class PhotonAligner extends Command {
         SmartDashboard.putBoolean("Vision Target Visible", targetVisible);
         SmartDashboard.putNumber("Photon Forward", forward);
         SmartDashboard.putNumber("Photon strafe", strafe);
-        SmartDashboard.putNumber("Photon turn", turn);
+        SmartDashboard.putNumber("Photon estimated distance", projectedDistance);
 }
 }
