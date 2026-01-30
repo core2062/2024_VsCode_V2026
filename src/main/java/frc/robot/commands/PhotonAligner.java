@@ -18,7 +18,7 @@ public class PhotonAligner extends Command {
     private Joystick controller;
     
     private final double anglekP=0.4;
-    private final double driveKP=0.6;
+    private final double driveKP=2.1;
     private final double targetDistance=0.5;
     private double projectedDistance=0;
     private double projectedStraf=0;
@@ -70,10 +70,10 @@ public class PhotonAligner extends Command {
             turn = targetYaw * anglekP * Constants.Swerve.maxAngularVelocity;
         }
         double distanceError=targetDistance-projectedDistance;
-        if(Math.abs(distanceError)>0.15){
+        if(Math.abs(distanceError)>0.025){
         forward=driveKP*Constants.Swerve.maxSpeed*distanceError;
         }
-        if(Math.abs(projectedStraf)>0.15){
+        if(Math.abs(projectedStraf)>0.025){
         strafe=driveKP*Constants.Swerve.maxSpeed*projectedStraf;
         }
     }
